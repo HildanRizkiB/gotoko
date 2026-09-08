@@ -1,0 +1,9 @@
+cat > .gitignore <<'EOF'
+.env
+.env.*
+!.env.example
+
+bin/
+tmp/
+*.log
+EOF
