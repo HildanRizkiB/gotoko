@@ -1,21 +1,19 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
-	"net/http"
 	"os"
+
+	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	http.HandleFunc("/api/health", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-
-		json.NewEncoder(w).Encode(map[string]string{
-			"status":  "ok",
-			"message": "Go API is running!",
-		})
-	})
+	// Load .env
+	err := godotenv.Load()
+	if err != nil {
+		log.Println(".env tidak ditemukan, menggunakan environment variable")
+	}
 
 	port := os.Getenv("PORT")
 
@@ -23,7 +21,15 @@ func main() {
 		port = "8080"
 	}
 
-	log.Println("Server running on port", port)
+	server := gin.Default()
 
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	server.GET("/api/hello", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "Hello from Go",
+		})
+	})
+
+	log.Println("Server running on port:", port)
+
+	server.Run(":" + port)
 }
